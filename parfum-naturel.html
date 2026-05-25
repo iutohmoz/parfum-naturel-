@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Crée ton parfum naturel & bio</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #faf9f7; color: #1a1a1a; min-height: 100vh; padding: 2rem 1rem; }
+  .app { max-width: 620px; margin: 0 auto; }
+  .lang-bar { display: flex; gap: 8px; margin-bottom: 2rem; flex-wrap: wrap; }
+  .lang-btn { padding: 6px 16px; border-radius: 20px; border: 1px solid #ddd; background: transparent; color: #666; font-size: 13px; cursor: pointer; transition: all 0.15s; }
+  .lang-btn.active { background: #1a1a1a; color: #fff; border-color: #1a1a1a; }
+  .hero-title { font-size: 24px; font-weight: 600; margin-bottom: 8px; color: #1a1a1a; }
+  .hero-sub { font-size: 15px; color: #666; line-height: 1.6; margin-bottom: 2rem; }
+  .progress { display: flex; gap: 6px; margin-bottom: 1.5rem; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: #ddd; transition: background 0.2s; }
+  .dot.done { background: #888; }
+  .dot.cur { background: #1a1a1a; }
+  .step-label { font-size: 12px; color: #999; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.75rem; }
+  .question { font-size: 18px; font-weight: 600; color: #1a1a1a; margin-bottom: 1.25rem; line-height: 1.4; }
+  .opts { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-bottom: 1.5rem; }
+  .opt { padding: 12px 16px; border-radius: 10px; border: 1.5px solid #e5e5e5; background: #fff; color: #1a1a1a; font-size: 14px; cursor: pointer; text-align: center; line-height: 1.4; transition: all 0.15s; }
+  .opt:hover { border-color: #aaa; background: #f5f5f5; }
+  .opt.sel { border-color: #1a1a1a; background: #f0f0f0; font-weight: 600; }
+  .nav { display: flex; gap: 10px; margin-top: 1rem; }
+  .btn { padding: 11px 22px; border-radius: 10px; border: 1.5px solid #1a1a1a; background: transparent; color: #1a1a1a; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.15s; }
+  .btn:hover { background: #f0f0f0; }
+  .btn:disabled { opacity: 0.3; cursor: default; }
+  .btn-main { background: #1a1a1a; color: #fff; }
+  .btn-main:hover { background: #333; }
+  .result-card { background: #fff; border: 1.5px solid #e5e5e5; border-radius: 14px; padding: 1.75rem; margin-bottom: 1rem; }
+  .r-name { font-size: 22px; font-weight: 700; color: #1a1a1a; margin-bottom: 4px; }
+  .r-tag { font-size: 14px; color: #888; margin-bottom: 1.5rem; font-style: italic; }
+  .ing-header { display: flex; justify-content: space-between; font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: #aaa; padding-bottom: 8px; border-bottom: 1px solid #f0f0f0; margin-bottom: 4px; }
+  .ing-row { display: flex; justify-content: space-between; align-items: center; padding: 9px 0; border-bottom: 1px solid #f5f5f5; }
+  .ing-row:last-child { border-bottom: none; }
+  .ing-left { display: flex; align-items: center; gap: 8px; }
+  .ing-name { font-size: 14px; color: #1a1a1a; }
+  .note-tag { font-size: 11px; padding: 2px 8px; border-radius: 10px; background: #f0f0f0; color: #666; }
+  .ing-right { display: flex; align-items: center; gap: 10px; }
+  .bar-wrap { width: 50px; height: 4px; background: #eee; border-radius: 2px; }
+  .bar-fill { height: 4px; border-radius: 2px; background: #1a1a1a; }
+  .ing-pct { font-size: 13px; color: #888; min-width: 30px; text-align: right; font-weight: 600; }
+  .tip-box { background: #f8f7f4; border-radius: 10px; padding: 14px 18px; font-size: 14px; color: #555; line-height: 1.7; margin-bottom: 1.25rem; border-left: 3px solid #ddd; }
+  .tip-box strong { color: #1a1a1a; }
+  .restart { font-size: 13px; color: #888; background: none; border: none; cursor: pointer; text-decoration: underline; padding: 4px 0; }
+  .badge { display: inline-block; background: #f0faf5; color: #2d7a56; font-size: 12px; padding: 3px 10px; border-radius: 10px; margin-bottom: 1rem; font-weight: 600; }
+  @media (max-width: 480px) {
+    .opts { grid-template-columns: 1fr 1fr; }
+    .hero-title { font-size: 20px; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="lang-bar">
+    <button class="lang-btn active" onclick="setLang('fr')">🇫🇷 Français</button>
+    <button class="lang-btn" onclick="setLang('en')">🇬🇧 English</button>
+    <button class="lang-btn" onclick="setLang('ru')">🇷🇺 Русский</button>
+    <button class="lang-btn" onclick="setLang('es')">🇪🇸 Español</button>
+  </div>
+  <div id="hero-title" class="hero-title"></div>
+  <div id="hero-sub" class="hero-sub"></div>
+  <div class="progress" id="prog"></div>
+  <div id="area"></div>
+</div>
+
+<script>
+const DB = {
+  fr: {
+    title: "Crée ton parfum naturel & bio ✦",
+    sub: "5 questions. Une formule unique, 100% naturelle, rien que pour toi.",
+    next: "Suivant", gen: "Créer ma formule", restart: "Recommencer",
+    tipLabel: "Conseil d'utilisation",
+    bioLabel: "100% Naturel & Bio",
+    qs: [
+      { q: "Quelle ambiance cherches-tu ?", opts: ["Floral & romantique","Vert & frais","Boisé & chaud","Agrumes & pétillant","Mystérieux & profond","Marin & aérien"] },
+      { q: "Pour quel moment de la journée ?", opts: ["Matin & réveil","Journée de travail","Soirée détendue","Nuit & sortie"] },
+      { q: "Quelle intensité préfères-tu ?", opts: ["Légère & aérienne","Équilibrée","Intense & enveloppante"] },
+      { q: "Une note qui t'attire particulièrement ?", opts: ["Rose","Bergamote","Cèdre","Vétiver","Néroli","Ylang-ylang"] },
+      { q: "Quel est ton type de peau ?", opts: ["Sèche","Mixte","Grasse","Sensible"] }
+    ],
+    noteLabels: ["Tête","Cœur","Fond"],
+    ingLabel: "Ingrédient", noteLabel: "Note", pctLabel: "Dosage"
+  },
+  en: {
+    title: "Create your natural & organic perfume ✦",
+    sub: "5 questions. A unique 100% natural formula, just for you.",
+    next: "Next", gen: "Create my formula", restart: "Start over",
+    tipLabel: "Application tip",
+    bioLabel: "100% Natural & Organic",
+    qs: [
+      { q: "What mood are you looking for?", opts: ["Floral & romantic","Green & fresh","Woody & warm","Citrus & sparkling","Mysterious & deep","Marine & airy"] },
+      { q: "For which moment of the day?", opts: ["Morning & wake up","Workday","Relaxed evening","Night & going out"] },
+      { q: "What intensity do you prefer?", opts: ["Light & airy","Balanced","Intense & enveloping"] },
+      { q: "A note that particularly attracts you?", opts: ["Rose","Bergamot","Cedar","Vetiver","Neroli","Ylang-ylang"] },
+      { q: "What is your skin type?", opts: ["Dry","Combination","Oily","Sensitive"] }
+    ],
+    noteLabels: ["Top","Heart","Base"],
+    ingLabel: "Ingredient", noteLabel: "Note", pctLabel: "Dosage"
+  },
+  ru: {
+    title: "Создай свои натуральные духи ✦",
+    sub: "5 вопросов. Уникальная формула, 100% натуральная, только для тебя.",
+    next: "Далее", gen: "Создать мою формулу", restart: "Начать заново",
+    tipLabel: "Совет по нанесению",
+    bioLabel: "100% Натуральный & Органический",
+    qs: [
+      { q: "Какое настроение ты ищешь?", opts: ["Цветочное & романтичное","Зелёное & свежее","Древесное & тёплое","Цитрусовое & искристое","Таинственное & глубокое","Морское & лёгкое"] },
+      { q: "Для какого времени суток?", opts: ["Утро & пробуждение","Рабочий день","Тихий вечер","Ночь & выход в свет"] },
+      { q: "Какую интенсивность предпочитаешь?", opts: ["Лёгкую & воздушную","Сбалансированную","Насыщенную & обволакивающую"] },
+      { q: "Нота, которая тебя привлекает?", opts: ["Роза","Бергамот","Кедр","Ветивер","Нероли","Иланг-иланг"] },
+      { q: "Какой у тебя тип кожи?", opts: ["Сухая","Комбинированная","Жирная","Чувствительная"] }
+    ],
+    noteLabels: ["Верхняя","Средняя","Базовая"],
+    ingLabel: "Ингредиент", noteLabel: "Нота", pctLabel: "Дозировка"
+  },
+  es: {
+    title: "Crea tu perfume natural & ecológico ✦",
+    sub: "5 preguntas. Una fórmula única, 100% natural, solo para ti.",
+    next: "Siguiente", gen: "Crear mi fórmula", restart: "Empezar de nuevo",
+    tipLabel: "Consejo de aplicación",
+    bioLabel: "100% Natural & Ecológico",
+    qs: [
+      { q: "¿Qué ambiente buscas?", opts: ["Floral & romántico","Verde & fresco","Amaderado & cálido","Cítrico & chispeante","Misterioso & profundo","Marino & aéreo"] },
+      { q: "¿Para qué momento del día?", opts: ["Mañana & despertar","Día de trabajo","Tarde relajada","Noche & salida"] },
+      { q: "¿Qué intensidad prefieres?", opts: ["Ligera & aérea","Equilibrada","Intensa & envolvente"] },
+      { q: "¿Una nota que te atraiga?", opts: ["Rosa","Bergamota","Cedro","Vetiver","Neroli","Ylang-ylang"] },
+      { q: "¿Cuál es tu tipo de piel?", opts: ["Seca","Mixta","Grasa","Sensible"] }
+    ],
+    noteLabels: ["Salida","Corazón","Fondo"],
+    ingLabel: "Ingrediente", noteLabel: "Nota", pctLabel: "Dosaje"
+  }
+};
+
+const FORMULAS = [
+  { mood:0,time:0,intensity:0,note:4,skin:3,
+    name:{fr:"Aurore Délicate",en:"Delicate Dawn",ru:"Нежная Аврора",es:"Aurora Delicada"},
+    tagline:{fr:"La douceur du matin sur une peau de soie",en:"Morning softness on silken skin",ru:"Нежность утра на шёлковой коже",es:"La suavidad del amanecer en piel de seda"},
+    ingredients:[
+      {fr:"Néroli bio",en:"Organic neroli",ru:"Органический нероли",es:"Neroli orgánico",pct:20,note:0},
+      {fr:"Rose de Damas",en:"Damask rose",ru:"Дамасская роза",es:"Rosa de Damasco",pct:25,note:1},
+      {fr:"Santal blanc",en:"White sandalwood",ru:"Белый сандал",es:"Sándalo blanco",pct:20,note:2},
+      {fr:"Huile de jojoba",en:"Jojoba oil",ru:"Масло жожоба",es:"Aceite de jojoba",pct:20,note:2},
+      {fr:"Mandarine bio",en:"Organic mandarin",ru:"Органический мандарин",es:"Mandarina orgánica",pct:10,note:0},
+      {fr:"Camomille romaine",en:"Roman chamomile",ru:"Римская ромашка",es:"Manzanilla romana",pct:5,note:1}
+    ],
+    tip:{fr:"Appliquer sur les poignets et derrière les oreilles après la douche, sur peau légèrement humide.",en:"Apply on wrists and behind ears after shower, on slightly damp skin.",ru:"Наносить на запястья и за ушами после душа, на слегка влажную кожу.",es:"Aplicar en muñecas y detrás de las orejas tras la ducha, sobre piel ligeramente húmeda."}
+  },
+  { mood:1,time:1,intensity:1,note:1,skin:1,
+    name:{fr:"Vert Équilibre",en:"Green Balance",ru:"Зелёный Баланс",es:"Verde Equilibrio"},
+    tagline:{fr:"La fraîcheur de la forêt, la clarté de l'esprit",en:"Forest freshness, clarity of mind",ru:"Свежесть леса, ясность ума",es:"Frescura del bosque, claridad mental"},
+    ingredients:[
+      {fr:"Bergamote bio",en:"Organic bergamot",ru:"Органический бергамот",es:"Bergamota orgánica",pct:22,note:0},
+      {fr:"Feuille de violette",en:"Violet leaf",ru:"Лист фиалки",es:"Hoja de violeta",pct:15,note:0},
+      {fr:"Géranium rosat",en:"Rose geranium",ru:"Герань душистая",es:"Geranio rosa",pct:20,note:1},
+      {fr:"Vétiver bio",en:"Organic vetiver",ru:"Органический ветивер",es:"Vetiver orgánico",pct:18,note:2},
+      {fr:"Cèdre de l'Atlas",en:"Atlas cedar",ru:"Атласский кедр",es:"Cedro del Atlas",pct:15,note:2},
+      {fr:"Eucalyptus radiata",en:"Eucalyptus radiata",ru:"Эвкалипт радиата",es:"Eucalipto radiata",pct:10,note:0}
+    ],
+    tip:{fr:"Vaporiser sur les vêtements et les cheveux pour une diffusion prolongée tout au long de la journée.",en:"Spray on clothes and hair for prolonged diffusion throughout the day.",ru:"Распылять на одежду и волосы для длительного аромата в течение дня.",es:"Pulverizar en ropa y cabello para una difusión prolongada durante el día."}
+  },
+  { mood:2,time:3,intensity:2,note:2,skin:0,
+    name:{fr:"Bois de Nuit",en:"Night Wood",ru:"Ночной Лес",es:"Madera Nocturna"},
+    tagline:{fr:"Un voyage au cœur des forêts anciennes",en:"A journey to the heart of ancient forests",ru:"Путешествие в сердце древних лесов",es:"Un viaje al corazón de los bosques antiguos"},
+    ingredients:[
+      {fr:"Cèdre de Virginie",en:"Virginia cedar",ru:"Виргинский кедр",es:"Cedro de Virginia",pct:25,note:2},
+      {fr:"Patchouli bio",en:"Organic patchouli",ru:"Органический пачули",es:"Pachulí orgánico",pct:18,note:2},
+      {fr:"Rose absolue",en:"Rose absolute",ru:"Абсолю розы",es:"Absoluto de rosa",pct:15,note:1},
+      {fr:"Encens oliban",en:"Frankincense olibanum",ru:"Ладан олибанум",es:"Olíbano incienso",pct:15,note:2},
+      {fr:"Bergamote",en:"Bergamot",ru:"Бергамот",es:"Bergamota",pct:12,note:0},
+      {fr:"Ylang-ylang",en:"Ylang-ylang",ru:"Иланг-иланг",es:"Ylang-ylang",pct:10,note:1},
+      {fr:"Beurre de karité",en:"Shea butter",ru:"Масло ши",es:"Manteca de karité",pct:5,note:2}
+    ],
+    tip:{fr:"Appliquer sur le sternum et le bas du cou le soir. La chaleur corporelle développe les notes boisées au fil des heures.",en:"Apply on sternum and lower neck in the evening. Body heat develops woody notes over hours.",ru:"Наносить на грудину и нижнюю часть шеи вечером. Тепло тела раскрывает древесные ноты.",es:"Aplicar en el esternón y parte baja del cuello por la noche. El calor corporal desarrolla las notas maderosas."}
+  },
+  { mood:3,time:0,intensity:0,note:1,skin:1,
+    name:{fr:"Zeste Matinal",en:"Morning Zest",ru:"Утренняя Свежесть",es:"Zest Matutino"},
+    tagline:{fr:"L'énergie des agrumes pour commencer la journée",en:"Citrus energy to start the day",ru:"Энергия цитрусов для начала дня",es:"Energía cítrica para comenzar el día"},
+    ingredients:[
+      {fr:"Bergamote bio",en:"Organic bergamot",ru:"Органический бергамот",es:"Bergamota orgánica",pct:28,note:0},
+      {fr:"Citron pressé",en:"Pressed lemon",ru:"Отжатый лимон",es:"Limón exprimido",pct:20,note:0},
+      {fr:"Pamplemousse rose",en:"Pink grapefruit",ru:"Розовый грейпфрут",es:"Pomelo rosa",pct:18,note:0},
+      {fr:"Fleur d'oranger",en:"Orange blossom",ru:"Цветок апельсина",es:"Flor de azahar",pct:15,note:1},
+      {fr:"Vétiver léger",en:"Light vetiver",ru:"Лёгкий ветивер",es:"Vetiver suave",pct:12,note:2},
+      {fr:"Musc blanc naturel",en:"Natural white musk",ru:"Натуральный белый мускус",es:"Almizcle blanco natural",pct:7,note:2}
+    ],
+    tip:{fr:"Vaporiser généreusement après la douche. Se renouvelle facilement — idéal pour une utilisation quotidienne.",en:"Spray generously after shower. Easy to reapply — ideal for daily use.",ru:"Обильно распылять после душа. Легко обновлять — идеально для ежедневного использования.",es:"Pulverizar generosamente tras la ducha. Fácil de renovar — ideal para uso diario."}
+  },
+  { mood:4,time:3,intensity:2,note:3,skin:0,
+    name:{fr:"Ombre Profonde",en:"Deep Shadow",ru:"Глубокая Тень",es:"Sombra Profunda"},
+    tagline:{fr:"Le mystère à l'état pur, une signature inoubliable",en:"Mystery in its purest form, an unforgettable signature",ru:"Тайна в чистом виде, незабываемый след",es:"El misterio en estado puro, una firma inolvidable"},
+    ingredients:[
+      {fr:"Vétiver de Haïti",en:"Haiti vetiver",ru:"Гаитянский ветивер",es:"Vetiver de Haití",pct:22,note:2},
+      {fr:"Oud naturel",en:"Natural oud",ru:"Натуральный уд",es:"Oud natural",pct:18,note:2},
+      {fr:"Rose absolue",en:"Rose absolute",ru:"Абсолю розы",es:"Absoluto de rosa",pct:15,note:1},
+      {fr:"Ambre gris",en:"Grey amber",ru:"Серая амбра",es:"Ámbar gris",pct:15,note:2},
+      {fr:"Poivre noir bio",en:"Organic black pepper",ru:"Органический чёрный перец",es:"Pimienta negra orgánica",pct:12,note:0},
+      {fr:"Encens",en:"Frankincense",ru:"Ладан",es:"Incienso",pct:10,note:1},
+      {fr:"Musc animal végétal",en:"Vegetal animal musk",ru:"Растительный мускус",es:"Almizcle vegetal",pct:8,note:2}
+    ],
+    tip:{fr:"Une seule application sur la nuque suffit. Ce parfum se révèle sur plusieurs heures — éviter de le superposer.",en:"A single application on the nape suffices. This perfume reveals itself over hours — avoid layering.",ru:"Достаточно одного нанесения на затылок. Аромат раскрывается в течение нескольких часов.",es:"Una sola aplicación en la nuca es suficiente. Este perfume se revela durante horas — evitar superponer."}
+  },
+  { mood:5,time:1,intensity:1,note:4,skin:2,
+    name:{fr:"Écume Marine",en:"Sea Foam",ru:"Морская Пена",es:"Espuma Marina"},
+    tagline:{fr:"L'air iodé, la liberté, l'horizon bleu",en:"Salt air, freedom, the blue horizon",ru:"Морской воздух, свобода, синий горизонт",es:"Aire salino, libertad, horizonte azul"},
+    ingredients:[
+      {fr:"Néroli bio",en:"Organic neroli",ru:"Органический нероли",es:"Neroli orgánico",pct:20,note:0},
+      {fr:"Eucalyptus marin",en:"Marine eucalyptus",ru:"Морской эвкалипт",es:"Eucalipto marino",pct:18,note:0},
+      {fr:"Algue marine",en:"Sea algae",ru:"Морские водоросли",es:"Alga marina",pct:15,note:1},
+      {fr:"Musc blanc",en:"White musk",ru:"Белый мускус",es:"Almizcle blanco",pct:20,note:2},
+      {fr:"Cèdre bleu",en:"Blue cedar",ru:"Синий кедр",es:"Cedro azul",pct:15,note:2},
+      {fr:"Citron vert",en:"Lime",ru:"Лайм",es:"Lima",pct:12,note:0}
+    ],
+    tip:{fr:"Parfait comme brume capillaire ou sur les vêtements légers. Se réapplique sans retenue pour un effet fraîcheur.",en:"Perfect as a hair mist or on light clothing. Reapply freely for a freshness effect.",ru:"Идеально как дымка для волос или на лёгкую одежду. Можно свободно обновлять для эффекта свежести.",es:"Perfecto como bruma capilar o en ropa ligera. Reaplicar libremente para efecto frescura."}
+  }
+];
+
+let lang='fr', step=0, ans=[];
+
+function setLang(l){
+  lang=l;
+  document.querySelectorAll('.lang-btn').forEach((b,i)=>b.classList.toggle('active',['fr','en','ru','es'][i]===l));
+  document.getElementById('hero-title').textContent=DB[l].title;
+  document.getElementById('hero-sub').textContent=DB[l].sub;
+  if(!ans.length) render();
+}
+
+function renderProg(){
+  const total=DB[lang].qs.length;
+  document.getElementById('prog').innerHTML=Array.from({length:total},(_,i)=>
+    `<div class="dot ${i<step?'done':i===step?'cur':''}"></div>`).join('');
+}
+
+function render(){
+  const t=DB[lang]; renderProg();
+  if(step>=t.qs.length){renderResult();return;}
+  const q=t.qs[step]; const sel=ans[step];
+  const isLast=step===t.qs.length-1;
+  document.getElementById('area').innerHTML=`
+    <div class="step-label">${step+1} / ${t.qs.length}</div>
+    <div class="question">${q.q}</div>
+    <div class="opts">${q.opts.map((o,i)=>`<button class="opt${sel===i?' sel':''}" onclick="pick(${i})">${o}</button>`).join('')}</div>
+    <div class="nav">
+      ${step>0?`<button class="btn" onclick="back()">← </button>`:''}
+      <button class="btn btn-main" id="nb" onclick="fwd()" ${sel===undefined?'disabled':''}>
+        ${isLast?t.gen:t.next} →
+      </button>
+    </div>`;
+}
+
+function pick(i){
+  ans[step]=i;
+  document.querySelectorAll('.opt').forEach((b,idx)=>b.classList.toggle('sel',idx===i));
+  const nb=document.getElementById('nb'); if(nb) nb.disabled=false;
+}
+function fwd(){if(ans[step]===undefined)return;step++;render();}
+function back(){step--;render();}
+function score(f){return(f.mood===ans[0]?3:0)+(f.time===ans[1]?2:0)+(f.intensity===ans[2]?2:0)+(f.note===ans[3]?2:0)+(f.skin===ans[4]?1:0);}
+
+function renderResult(){
+  const t=DB[lang];
+  const best=FORMULAS.reduce((a,b)=>score(b)>score(a)?b:a);
+  const nl=t.noteLabels;
+  renderProg();
+  document.getElementById('area').innerHTML=`
+    <div class="badge">${t.bioLabel}</div>
+    <div class="result-card">
+      <div class="r-name">${best.name[lang]}</div>
+      <div class="r-tag">${best.tagline[lang]}</div>
+      <div class="ing-header"><span>${t.ingLabel}</span><span>${t.noteLabel} / ${t.pctLabel}</span></div>
+      ${best.ingredients.map(ing=>`
+        <div class="ing-row">
+          <div class="ing-left">
+            <span class="ing-name">${ing[lang]}</span>
+            <span class="note-tag">${nl[ing.note]}</span>
+          </div>
+          <div class="ing-right">
+            <div class="bar-wrap"><div class="bar-fill" style="width:${Math.round(ing.pct*0.5)}px"></div></div>
+            <span class="ing-pct">${ing.pct}%</span>
+          </div>
+        </div>`).join('')}
+    </div>
+    <div class="tip-box"><strong>${t.tipLabel} :</strong> ${best.tip[lang]}</div>
+    <button class="restart" onclick="restart()">↩ ${t.restart}</button>`;
+}
+
+function restart(){step=0;ans=[];render();}
+
+document.getElementById('hero-title').textContent=DB[lang].title;
+document.getElementById('hero-sub').textContent=DB[lang].sub;
+render();
+</script>
+</body>
+</html>
